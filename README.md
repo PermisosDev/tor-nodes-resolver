@@ -2,8 +2,6 @@
 <p>Resolve or check if an IP Address is a tor exit/node</p>
 <p>
     <img src="https://raw.githubusercontent.com/MikeCodesDotNET/ColoredBadges/master/svg/dev/languages/java.svg"> 
-    <img src="https://raw.githubusercontent.com/MikeCodesDotNET/ColoredBadges/master/svg/dev/languages/js.svg">
-    <img src="https://raw.githubusercontent.com/MikeCodesDotNET/ColoredBadges/master/svg/dev/languages/python.svg">
 </p>
 
 <hr>
@@ -16,8 +14,6 @@ The project internally downloads a list of known nodes from [this file](https://
 
 ### Index
 - [For Java](https://github.com/sammwyy/tor-nodes-resolver/tree/master/java)
-- [For NodeJS](https://github.com/sammwyy/tor-nodes-resolver/tree/master/nodejs)
-- [For Python](https://github.com/sammwyy/tor-nodes-resolver/tree/master/python)
 
 ### How to use
 #### Java
@@ -34,23 +30,4 @@ public class Test {
     }   
 
 }
-```
-
-#### Javascript
-```javascript
-const TorNodesResolver = require("./");
-const tnr = TorNodesResolver();
-
-setTimeout(() => {
-    console.log(tnr.isNode("45.154.35.252"));
-    console.log(tnr.isNode("11.22.33.44"));
-}, 500);
-```
-
-#### Python
-```python
-import TorNodesResolver
-
-print(str(TorNodesResolver.isNode("45.154.35.252")))
-print(str(TorNodesResolver.isNode("11.22.33")))
 ```
