@@ -4,30 +4,46 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TorNodesResolver {
 
-    public List<String> nodes = new ArrayList<String>();
+    private Set<String> nodes = new HashSet<>();
+
+    private static String fallbackurl = "https://check.torproject.org/torbulkexitlist";
 
     public TorNodesResolver () {
-        final String url = "https://check.torproject.org/torbulkexitlist";
 
         try {
-            final String content = getNodeListFromUrl(url);
+            final String content = getNodeListFromUrl();
             final String[] list = content.split("\n");
 
-            for (final String node : list) {
-                nodes.add(node);
-            }
+            nodes.addAll(Arrays.asList(list));
         } catch (final Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    private static String getNodeListFromUrl(final String requestURL) throws IOException {
+    public TorNodesResolver (String nodesUrl)  {
+
+        try {
+            final String content = getNodeListFromUrl(nodesUrl);
+            final String[] list = content.split("\n");
+
+            nodes.addAll(List.of(list));
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String getNodeListFromUrl() throws IOException {
+        try (Scanner scanner = new Scanner(new URL(fallbackurl).openStream(), StandardCharsets.UTF_8.toString())) {
+            scanner.useDelimiter("\\A");
+            return scanner.hasNext() ? scanner.next() : "";
+        }
+    }
+
+    private static String getNodeListFromUrl(String requestURL) throws IOException {
         try (Scanner scanner = new Scanner(new URL(requestURL).openStream(), StandardCharsets.UTF_8.toString())) {
             scanner.useDelimiter("\\A");
             return scanner.hasNext() ? scanner.next() : "";
@@ -35,12 +51,13 @@ public class TorNodesResolver {
     }
 
     public boolean isNode(final String address) {
-        return this.nodes.contains(address);
+        Optional<String> result = this.nodes.stream().parallel().filter(e -> e.equals(address)).findAny();
+        return result.isPresent();
     }
 
     public boolean isNode(final InetSocketAddress socketAddress) {
-        final String address = socketAddress.getAddress().toString();
-        return this.nodes.contains(address);
+        Optional<String> result = this.nodes.stream().parallel().filter(e -> e.equals(socketAddress.toString())).findAny();
+        return result.isPresent();
     }
 
 }
